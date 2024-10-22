@@ -6,10 +6,10 @@ import { Pawn } from '../../models/pieces/pawn';
 import { Piece } from '../../models/pieces/piece';
 import { Queen } from '../../models/pieces/queen';
 import { Rook } from '../../models/pieces/rook';
+import { Coin } from '../../models/pieces/coin';
 import { PieceIconInput } from './piece-icon-input';
 
 export class PieceIconInputManager {
-
     private _defaultIcons: boolean = false;
     private _pieceIconInput: PieceIconInput;
 
@@ -21,7 +21,6 @@ export class PieceIconInputManager {
         this._pieceIconInput = value;
     }
 
-
     get defaultIcons(): boolean {
         return this._defaultIcons;
     }
@@ -31,42 +30,61 @@ export class PieceIconInputManager {
     }
 
     isDefaultIcons(): boolean {
-        return this.pieceIconInput === undefined || this.pieceIconInput === null;
+        return (
+            this.pieceIconInput === undefined || this.pieceIconInput === null
+        );
     }
 
     getPieceIcon(piece: Piece): string {
-        let isWhite = (piece.color === Color.WHITE);
+        let isWhite = piece.color === Color.WHITE;
         switch (piece.constructor) {
+            case Coin:
+                return isWhite
+                    ? this.pieceIconInput.whiteCoinUrl
+                    : this.pieceIconInput.blackCoinUrl;
             case King:
-                return isWhite ? this.pieceIconInput.whiteKingUrl : this.pieceIconInput.blackKingUrl;
+                return isWhite
+                    ? this.pieceIconInput.whiteKingUrl
+                    : this.pieceIconInput.blackKingUrl;
             case Queen:
-                return isWhite ? this.pieceIconInput.whiteQueenUrl : this.pieceIconInput.blackQueenUrl;
+                return isWhite
+                    ? this.pieceIconInput.whiteQueenUrl
+                    : this.pieceIconInput.blackQueenUrl;
             case Rook:
-                return isWhite ? this.pieceIconInput.whiteRookUrl : this.pieceIconInput.blackRookUrl;
+                return isWhite
+                    ? this.pieceIconInput.whiteRookUrl
+                    : this.pieceIconInput.blackRookUrl;
             case Bishop:
-                return isWhite ? this.pieceIconInput.whiteBishopUrl : this.pieceIconInput.blackBishopUrl;
+                return isWhite
+                    ? this.pieceIconInput.whiteBishopUrl
+                    : this.pieceIconInput.blackBishopUrl;
             case Knight:
-                return isWhite ? this.pieceIconInput.whiteKnightUrl : this.pieceIconInput.blackKnightUrl;
+                return isWhite
+                    ? this.pieceIconInput.whiteKnightUrl
+                    : this.pieceIconInput.blackKnightUrl;
             case Pawn:
-                return isWhite ? this.pieceIconInput.whitePawnUrl : this.pieceIconInput.blackPawnUrl;
+                return isWhite
+                    ? this.pieceIconInput.whitePawnUrl
+                    : this.pieceIconInput.blackPawnUrl;
         }
     }
 
-    loadDefaultData(){
+    loadDefaultData() {
         this.pieceIconInput = {
+            blackCoinUrl: '',
             blackBishopUrl: '',
             blackKingUrl: '',
             blackKnightUrl: '',
             blackQueenUrl: '',
             blackRookUrl: '',
+            whiteCoinUrl: '',
             whiteBishopUrl: '',
             whiteKingUrl: '',
             whiteKnightUrl: '',
             whitePawnUrl: '',
             whiteQueenUrl: '',
             whiteRookUrl: '',
-            blackPawnUrl: 'a'
-        }
+            blackPawnUrl: 'a',
+        };
     }
-
 }

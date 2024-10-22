@@ -7,12 +7,12 @@ import { Pawn } from '../../../../../models/pieces/pawn';
 import { Point } from '../../../../../models/pieces/point';
 import { Queen } from '../../../../../models/pieces/queen';
 import { Rook } from '../../../../../models/pieces/rook';
+import { Coin } from '../../../../../models/pieces/coin';
 import { UnicodeConstants } from '../../../../../utils/unicode-constants';
 import { AbstractEngineFacade } from '../../../../abstract-engine-facade';
 import { NotationProcessor } from '../notation-processor';
 
 export class DefaultFenProcessor implements NotationProcessor {
-
     public process(notation: string, engineFacade: AbstractEngineFacade): void {
         let fen = notation;
         if (notation) {
@@ -27,14 +27,24 @@ export class DefaultFenProcessor implements NotationProcessor {
                         pointer += Number(chunk);
                     } else {
                         switch (chunk) {
+                            case 'c':
+                                engineFacade.board.pieces.push(
+                                    new Coin(
+                                        new Point(i, pointer),
+                                        Color.BLACK,
+                                        UnicodeConstants.BLACK_COIN,
+                                        engineFacade.board,
+                                    ),
+                                );
+                                break;
                             case 'r':
                                 engineFacade.board.pieces.push(
                                     new Rook(
                                         new Point(i, pointer),
                                         Color.BLACK,
                                         UnicodeConstants.BLACK_ROOK,
-                                        engineFacade.board
-                                    )
+                                        engineFacade.board,
+                                    ),
                                 );
                                 break;
                             case 'n':
@@ -43,8 +53,8 @@ export class DefaultFenProcessor implements NotationProcessor {
                                         new Point(i, pointer),
                                         Color.BLACK,
                                         UnicodeConstants.BLACK_KNIGHT,
-                                        engineFacade.board
-                                    )
+                                        engineFacade.board,
+                                    ),
                                 );
 
                                 break;
@@ -54,8 +64,8 @@ export class DefaultFenProcessor implements NotationProcessor {
                                         new Point(i, pointer),
                                         Color.BLACK,
                                         UnicodeConstants.BLACK_BISHOP,
-                                        engineFacade.board
-                                    )
+                                        engineFacade.board,
+                                    ),
                                 );
                                 break;
                             case 'q':
@@ -64,8 +74,8 @@ export class DefaultFenProcessor implements NotationProcessor {
                                         new Point(i, pointer),
                                         Color.BLACK,
                                         UnicodeConstants.BLACK_QUEEN,
-                                        engineFacade.board
-                                    )
+                                        engineFacade.board,
+                                    ),
                                 );
                                 break;
                             case 'k':
@@ -74,8 +84,8 @@ export class DefaultFenProcessor implements NotationProcessor {
                                         new Point(i, pointer),
                                         Color.BLACK,
                                         UnicodeConstants.BLACK_KING,
-                                        engineFacade.board
-                                    )
+                                        engineFacade.board,
+                                    ),
                                 );
                                 break;
                             case 'p': {
@@ -83,11 +93,13 @@ export class DefaultFenProcessor implements NotationProcessor {
                                     new Point(i, pointer),
                                     Color.BLACK,
                                     UnicodeConstants.BLACK_PAWN,
-                                    engineFacade.board
+                                    engineFacade.board,
                                 );
                                 if (
-                                    (pawn.color === Color.BLACK && pawn.point.row !== 1) ||
-                                    (pawn.color === Color.WHITE && pawn.point.row !== 6)
+                                    (pawn.color === Color.BLACK &&
+                                        pawn.point.row !== 1) ||
+                                    (pawn.color === Color.WHITE &&
+                                        pawn.point.row !== 6)
                                 ) {
                                     pawn.isMovedAlready = true;
                                 }
@@ -100,8 +112,8 @@ export class DefaultFenProcessor implements NotationProcessor {
                                         new Point(i, pointer),
                                         Color.WHITE,
                                         UnicodeConstants.WHITE_ROOK,
-                                        engineFacade.board
-                                    )
+                                        engineFacade.board,
+                                    ),
                                 );
 
                                 break;
@@ -111,8 +123,8 @@ export class DefaultFenProcessor implements NotationProcessor {
                                         new Point(i, pointer),
                                         Color.WHITE,
                                         UnicodeConstants.WHITE_KNIGHT,
-                                        engineFacade.board
-                                    )
+                                        engineFacade.board,
+                                    ),
                                 );
                                 break;
 
@@ -122,8 +134,8 @@ export class DefaultFenProcessor implements NotationProcessor {
                                         new Point(i, pointer),
                                         Color.WHITE,
                                         UnicodeConstants.WHITE_BISHOP,
-                                        engineFacade.board
-                                    )
+                                        engineFacade.board,
+                                    ),
                                 );
                                 break;
 
@@ -133,8 +145,8 @@ export class DefaultFenProcessor implements NotationProcessor {
                                         new Point(i, pointer),
                                         Color.WHITE,
                                         UnicodeConstants.WHITE_QUEEN,
-                                        engineFacade.board
-                                    )
+                                        engineFacade.board,
+                                    ),
                                 );
                                 break;
 
@@ -144,8 +156,8 @@ export class DefaultFenProcessor implements NotationProcessor {
                                         new Point(i, pointer),
                                         Color.WHITE,
                                         UnicodeConstants.WHITE_KING,
-                                        engineFacade.board
-                                    )
+                                        engineFacade.board,
+                                    ),
                                 );
                                 break;
 
@@ -154,11 +166,13 @@ export class DefaultFenProcessor implements NotationProcessor {
                                     new Point(i, pointer),
                                     Color.WHITE,
                                     UnicodeConstants.WHITE_PAWN,
-                                    engineFacade.board
+                                    engineFacade.board,
                                 );
                                 if (
-                                    (pawn.color === Color.BLACK && pawn.point.row !== 1) ||
-                                    (pawn.color === Color.WHITE && pawn.point.row !== 6)
+                                    (pawn.color === Color.BLACK &&
+                                        pawn.point.row !== 1) ||
+                                    (pawn.color === Color.WHITE &&
+                                        pawn.point.row !== 6)
                                 ) {
                                     pawn.isMovedAlready = true;
                                 }
@@ -180,7 +194,6 @@ export class DefaultFenProcessor implements NotationProcessor {
             throw Error('Incorrect FEN provided');
         }
     }
-
 
     private setCurrentPlayer(board: Board, fen: string) {
         if (fen) {
@@ -229,12 +242,14 @@ export class DefaultFenProcessor implements NotationProcessor {
 
     private setRookAlreadyMoved(board: Board, color: Color, col: number) {
         const rook = board.pieces.find(
-            (piece) => piece.color === color && piece instanceof Rook && piece.point.col === col
+            (piece) =>
+                piece.color === color &&
+                piece instanceof Rook &&
+                piece.point.col === col,
         ) as Rook;
 
         if (rook) {
             rook.isMovedAlready = true;
         }
     }
-
 }

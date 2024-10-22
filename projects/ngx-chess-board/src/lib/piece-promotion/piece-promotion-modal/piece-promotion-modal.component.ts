@@ -4,11 +4,10 @@ import { PieceIconInput } from '../../utils/inputs/piece-icon-input';
 @Component({
     selector: 'app-piece-promotion-modal',
     templateUrl: './piece-promotion-modal.component.html',
-    styleUrls: ['./piece-promotion-modal.component.scss']
+    styleUrls: ['./piece-promotion-modal.component.scss'],
 })
 export class PiecePromotionModalComponent {
-
-    @ViewChild('myModal', {static: false}) modal: ElementRef;
+    @ViewChild('myModal', { static: false }) modal: ElementRef;
 
     @Input()
     pieceIconInput: PieceIconInput;
@@ -25,7 +24,7 @@ export class PiecePromotionModalComponent {
         this.modal.nativeElement.style.display = 'block';
     }
 
-    changeSelection(index: number){
+    changeSelection(index: number) {
         this.modal.nativeElement.style.display = 'none';
         this.opened = false;
         this.onCloseCallback(index);
@@ -35,16 +34,34 @@ export class PiecePromotionModalComponent {
         let coloredPiece = '';
         switch (piece.toLowerCase()) {
             case 'queen':
-                coloredPiece = this.color === 'white' ? this.pieceIconInput.whiteQueenUrl : this.pieceIconInput.blackQueenUrl;
+                coloredPiece =
+                    this.color === 'white'
+                        ? this.pieceIconInput.whiteQueenUrl
+                        : this.pieceIconInput.blackQueenUrl;
                 break;
             case 'rook':
-                coloredPiece = this.color === 'white' ? this.pieceIconInput.whiteRookUrl : this.pieceIconInput.blackRookUrl;
+                coloredPiece =
+                    this.color === 'white'
+                        ? this.pieceIconInput.whiteRookUrl
+                        : this.pieceIconInput.blackRookUrl;
                 break;
             case 'bishop':
-                coloredPiece = this.color === 'white' ? this.pieceIconInput.whiteBishopUrl : this.pieceIconInput.blackBishopUrl;
+                coloredPiece =
+                    this.color === 'white'
+                        ? this.pieceIconInput.whiteBishopUrl
+                        : this.pieceIconInput.blackBishopUrl;
                 break;
             case 'knight':
-                coloredPiece = this.color === 'white' ? this.pieceIconInput.whiteKnightUrl : this.pieceIconInput.blackKnightUrl;
+                coloredPiece =
+                    this.color === 'white'
+                        ? this.pieceIconInput.whiteKnightUrl
+                        : this.pieceIconInput.blackKnightUrl;
+                break;
+            case 'coin':
+                coloredPiece =
+                    this.color === 'white'
+                        ? this.pieceIconInput.whiteCoinUrl
+                        : this.pieceIconInput.blackCoinUrl;
                 break;
         }
 

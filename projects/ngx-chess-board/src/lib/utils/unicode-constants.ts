@@ -4,6 +4,7 @@ export interface PieceConstant {
 }
 
 export const UnicodeConstants = {
+    WHITE_COIN: { name: 'Coin', icon: '&#x1F4B0;' },
     WHITE_KING: { name: 'King', icon: '&#x2654;' },
     WHITE_QUEEN: { name: 'Queen', icon: '&#x2655;' },
     WHITE_KNIGHT: { name: 'Knight', icon: '&#x2658' },
@@ -11,6 +12,7 @@ export const UnicodeConstants = {
     WHITE_PAWN: { name: 'Pawn', icon: '&#x2659' },
     WHITE_BISHOP: { name: 'Bishop', icon: '&#x2657' },
 
+    BLACK_COIN: { name: 'Coin', icon: '&#x1F4B0' },
     BLACK_KING: { name: 'King', icon: '&#x265A' },
     BLACK_QUEEN: { name: 'Queen', icon: '&#x265B' },
     BLACK_KNIGHT: { name: 'Knight', icon: '&#x265E' },

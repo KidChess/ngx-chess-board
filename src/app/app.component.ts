@@ -2,11 +2,11 @@ import { Component, ViewChild } from '@angular/core';
 import {
     MoveChange,
     NgxChessBoardComponent,
-    PieceIconInput
+    PieceIconInput,
 } from 'ngx-chess-board';
 import {
     ColorInput,
-    PieceTypeInput
+    PieceTypeInput,
 } from 'ngx-chess-board/src/lib/utils/inputs/piece-type-input';
 import { FenComponent } from './components/fen/fen.component';
 
@@ -24,18 +24,20 @@ export class AppComponent {
     private currentStateIndex: number;
     manualMove = 'd2d4';
     icons: PieceIconInput = {
+        blackCoinUrl: '',
         blackBishopUrl: '',
         blackKingUrl: '',
         blackKnightUrl: '',
         blackPawnUrl: '',
         blackQueenUrl: '',
         blackRookUrl: '',
+        whiteCoinUrl: '',
         whiteBishopUrl: '',
         whiteKingUrl: '',
         whiteKnightUrl: '',
         whitePawnUrl: '',
         whiteQueenUrl: '',
-        whiteRookUrl: ''
+        whiteRookUrl: '',
     };
 
     public darkTileColor = 'rgb(97, 84, 61)';
@@ -150,7 +152,8 @@ export class AppComponent {
     }
 
     loadDefaultPgn() {
-        this.pgn = '1. c4 b5 2. cxb5 c6 3. bxc6 Nxc6 4. Qa4 a6\n' +
+        this.pgn =
+            '1. c4 b5 2. cxb5 c6 3. bxc6 Nxc6 4. Qa4 a6\n' +
             '5. Qxa6 Rb8 6. b3 d5 7. f4 e5 8. fxe5 f6\n' +
             '9. exf6 gxf6 10. Nf3 f5 11. Ne5 Bb7 12. Qxb7 Na7\n' +
             '13. Qxb8 Qxb8 14. Kf2 Kd8 15. Nc3 Be7 16. Nc4 Bf6\n' +
