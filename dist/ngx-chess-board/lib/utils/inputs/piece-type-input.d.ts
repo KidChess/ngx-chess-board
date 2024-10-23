@@ -4,7 +4,8 @@ export declare enum PieceTypeInput {
     BISHOP = 3,
     KNIGHT = 4,
     ROOK = 5,
-    PAWN = 6
+    PAWN = 6,
+    COIN = 7
 }
 export declare enum ColorInput {
     LIGHT = 1,

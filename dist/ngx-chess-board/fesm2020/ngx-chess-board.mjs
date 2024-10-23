@@ -988,7 +988,7 @@ class Queen extends Piece {
 
 class Coin extends Piece {
     constructor(point, color, constant, board) {
-        super(point, color, constant, 9, board);
+        super(point, color, constant, 1, board);
     }
     getPossibleMoves() {
         const possiblePoints = [];
@@ -1313,7 +1313,7 @@ class MoveUtils {
 class DefaultPiecesLoader {
     static loadDefaultPieces(board) {
         board.pieces = [];
-        // piony czarne
+        // black pawns
         for (let i = 0; i < 8; ++i) {
             board.pieces.push(new Pawn(new Point(1, i), Color.BLACK, UnicodeConstants.BLACK_PAWN, board));
         }
@@ -1325,7 +1325,7 @@ class DefaultPiecesLoader {
         board.pieces.push(new Bishop(new Point(0, 5), Color.BLACK, UnicodeConstants.BLACK_BISHOP, board));
         board.pieces.push(new Knight(new Point(0, 6), Color.BLACK, UnicodeConstants.BLACK_KNIGHT, board));
         board.pieces.push(new Rook(new Point(0, 7), Color.BLACK, UnicodeConstants.BLACK_ROOK, board));
-        // piony biale
+        // white pawns
         for (let i = 0; i < 8; ++i) {
             board.pieces.push(new Pawn(new Point(6, i), Color.WHITE, UnicodeConstants.WHITE_PAWN, board));
         }
@@ -2066,7 +2066,8 @@ class BoardLoader {
             this.notationProcessor = notationProcessor;
         }
         else {
-            this.notationProcessor = NotationProcessorFactory.getDefaultProcessor();
+            this.notationProcessor =
+                NotationProcessorFactory.getDefaultProcessor();
         }
     }
     addPieces() {
@@ -2200,6 +2201,7 @@ var PieceTypeInput;
     PieceTypeInput[PieceTypeInput["KNIGHT"] = 4] = "KNIGHT";
     PieceTypeInput[PieceTypeInput["ROOK"] = 5] = "ROOK";
     PieceTypeInput[PieceTypeInput["PAWN"] = 6] = "PAWN";
+    PieceTypeInput[PieceTypeInput["COIN"] = 7] = "COIN";
 })(PieceTypeInput || (PieceTypeInput = {}));
 var ColorInput;
 (function (ColorInput) {
@@ -2210,27 +2212,42 @@ var ColorInput;
 class PieceFactory {
     static create(indexes, pieceTypeInput, colorInput, board) {
         let piece;
-        let color = colorInput === ColorInput.LIGHT
-            ? Color.WHITE
-            : Color.BLACK;
+        let color = colorInput === ColorInput.LIGHT ? Color.WHITE : Color.BLACK;
         switch (pieceTypeInput) {
             case PieceTypeInput.QUEEN:
-                piece = new Queen(new Point(indexes.yAxis, indexes.xAxis), color, color === Color.WHITE ? UnicodeConstants.WHITE_QUEEN : UnicodeConstants.BLACK_QUEEN, board);
+                piece = new Queen(new Point(indexes.yAxis, indexes.xAxis), color, color === Color.WHITE
+                    ? UnicodeConstants.WHITE_QUEEN
+                    : UnicodeConstants.BLACK_QUEEN, board);
                 break;
             case PieceTypeInput.KING:
-                piece = new King(new Point(indexes.yAxis, indexes.xAxis), color, color === Color.WHITE ? UnicodeConstants.WHITE_KING : UnicodeConstants.BLACK_KING, board);
+                piece = new King(new Point(indexes.yAxis, indexes.xAxis), color, color === Color.WHITE
+                    ? UnicodeConstants.WHITE_KING
+                    : UnicodeConstants.BLACK_KING, board);
                 break;
             case PieceTypeInput.KNIGHT:
-                piece = new Knight(new Point(indexes.yAxis, indexes.xAxis), color, color === Color.WHITE ? UnicodeConstants.WHITE_KNIGHT : UnicodeConstants.BLACK_KNIGHT, board);
+                piece = new Knight(new Point(indexes.yAxis, indexes.xAxis), color, color === Color.WHITE
+                    ? UnicodeConstants.WHITE_KNIGHT
+                    : UnicodeConstants.BLACK_KNIGHT, board);
                 break;
             case PieceTypeInput.BISHOP:
-                piece = new Bishop(new Point(indexes.yAxis, indexes.xAxis), color, color === Color.WHITE ? UnicodeConstants.WHITE_BISHOP : UnicodeConstants.BLACK_BISHOP, board);
+                piece = new Bishop(new Point(indexes.yAxis, indexes.xAxis), color, color === Color.WHITE
+                    ? UnicodeConstants.WHITE_BISHOP
+                    : UnicodeConstants.BLACK_BISHOP, board);
                 break;
             case PieceTypeInput.ROOK:
-                piece = new Rook(new Point(indexes.yAxis, indexes.xAxis), color, color === Color.WHITE ? UnicodeConstants.WHITE_ROOK : UnicodeConstants.BLACK_ROOK, board);
+                piece = new Rook(new Point(indexes.yAxis, indexes.xAxis), color, color === Color.WHITE
+                    ? UnicodeConstants.WHITE_ROOK
+                    : UnicodeConstants.BLACK_ROOK, board);
                 break;
             case PieceTypeInput.PAWN:
-                piece = new Pawn(new Point(indexes.yAxis, indexes.xAxis), color, color === Color.WHITE ? UnicodeConstants.WHITE_PAWN : UnicodeConstants.BLACK_PAWN, board);
+                piece = new Pawn(new Point(indexes.yAxis, indexes.xAxis), color, color === Color.WHITE
+                    ? UnicodeConstants.WHITE_PAWN
+                    : UnicodeConstants.BLACK_PAWN, board);
+                break;
+            case PieceTypeInput.COIN:
+                piece = new Coin(new Point(indexes.yAxis, indexes.xAxis), color, color === Color.WHITE
+                    ? UnicodeConstants.WHITE_COIN
+                    : UnicodeConstants.BLACK_COIN, board);
                 break;
         }
         return piece;
@@ -2311,16 +2328,20 @@ class EngineFacade extends AbstractEngineFacade {
         this.board.possibleMoves = new AvailableMoveDecorator(pieceClicked, pointClicked, this.board.currentWhitePlayer ? Color.WHITE : Color.BLACK, this.board).getPossibleMoves();
     }
     onPieceClicked(pieceClicked, pointClicked) {
-        if ((this.board.currentWhitePlayer && pieceClicked.color === Color.BLACK) ||
-            (!this.board.currentWhitePlayer && pieceClicked.color === Color.WHITE)) {
+        if ((this.board.currentWhitePlayer &&
+            pieceClicked.color === Color.BLACK) ||
+            (!this.board.currentWhitePlayer &&
+                pieceClicked.color === Color.WHITE)) {
             return;
         }
         this.prepareActivePiece(pieceClicked, pointClicked);
     }
     handleClickEvent(pointClicked, isMouseDown) {
         let moving = false;
-        if (((this.board.isPointInPossibleMoves(pointClicked) ||
-            this.board.isPointInPossibleCaptures(pointClicked)) || this.freeMode) && pointClicked.isInRange()) {
+        if ((this.board.isPointInPossibleMoves(pointClicked) ||
+            this.board.isPointInPossibleCaptures(pointClicked) ||
+            this.freeMode) &&
+            pointClicked.isInRange()) {
             this.saveClone();
             this.board.lastMoveSrc = new Point(this.board.activePiece.point.row, this.board.activePiece.point.col);
             this.board.lastMoveDest = pointClicked.clone();
@@ -2355,10 +2376,11 @@ class EngineFacade extends AbstractEngineFacade {
         if (this.freeMode) {
             if (pieceClicked) {
                 if (event.ctrlKey) {
-                    this.board.pieces = this.board.pieces.filter(e => e !== pieceClicked);
+                    this.board.pieces = this.board.pieces.filter((e) => e !== pieceClicked);
                     return;
                 }
-                this.board.currentWhitePlayer = (pieceClicked.color === Color.WHITE);
+                this.board.currentWhitePlayer =
+                    pieceClicked.color === Color.WHITE;
             }
         }
         if (this.isPieceDisabled(pieceClicked)) {
@@ -2497,9 +2519,9 @@ class EngineFacade extends AbstractEngineFacade {
             stalemate,
             fen: this.board.fen,
             pgn: {
-                pgn: this.pgnProcessor.getPGN()
+                pgn: this.pgnProcessor.getPGN(),
             },
-            freeMode: this.freeMode
+            freeMode: this.freeMode,
         });
         this.moveDone = true;
     }
@@ -2595,7 +2617,7 @@ class EngineFacade extends AbstractEngineFacade {
             let indexes = MoveUtils.translateCoordsToIndex(coords, this.board.reverted);
             let existing = this.board.getPieceByPoint(indexes.yAxis, indexes.xAxis);
             if (existing) {
-                this.board.pieces = this.board.pieces.filter(e => e !== existing);
+                this.board.pieces = this.board.pieces.filter((e) => e !== existing);
             }
             let createdPiece = PieceFactory.create(indexes, pieceTypeInput, colorInput, this.board);
             this.saveClone();
@@ -2632,13 +2654,19 @@ class Board {
         return this.possibleCaptures.some((capture) => capture.row === row && capture.col === col);
     }
     isXYInSourceMove(i, j) {
-        return this.lastMoveSrc && this.lastMoveSrc.row === i && this.lastMoveSrc.col === j;
+        return (this.lastMoveSrc &&
+            this.lastMoveSrc.row === i &&
+            this.lastMoveSrc.col === j);
     }
     isXYInDestMove(i, j) {
-        return this.lastMoveDest && this.lastMoveDest.row === i && this.lastMoveDest.col === j;
+        return (this.lastMoveDest &&
+            this.lastMoveDest.row === i &&
+            this.lastMoveDest.col === j);
     }
     isXYInActiveMove(i, j) {
-        return this.activePiece && this.activePiece.point.row === i && this.activePiece.point.col === j;
+        return (this.activePiece &&
+            this.activePiece.point.row === i &&
+            this.activePiece.point.col === j);
     }
     isPointInPossibleMoves(point) {
         return this.possibleMoves.some((move) => move.row === point.row && move.col === point.col);
@@ -2680,7 +2708,9 @@ class Board {
         if (row > 7 || row < 0 || col > 7 || col < 0) {
             return false;
         }
-        return this.pieces.some((piece) => piece.point.col === col && piece.point.row === row && piece.color === enemyColor);
+        return this.pieces.some((piece) => piece.point.col === col &&
+            piece.point.row === row &&
+            piece.color === enemyColor);
     }
     isFieldEmpty(row, col) {
         if (row > 7 || row < 0 || col > 7 || col < 0) {
@@ -2691,7 +2721,9 @@ class Board {
     isFieldUnderAttack(row, col, color) {
         return this.pieces
             .filter((piece) => piece.color === color)
-            .some((piece) => piece.getCoveredFields().some((field) => field.col === col && field.row === row));
+            .some((piece) => piece
+            .getCoveredFields()
+            .some((field) => field.col === col && field.row === row));
     }
     getPieceByField(row, col) {
         if (this.isFieldEmpty(row, col)) {
@@ -2705,8 +2737,8 @@ class Board {
         if (king) {
             return pieces.some((piece) => piece
                 .getPossibleCaptures()
-                .some((point) => point.col === king.point.col && point.row === king.point.row) &&
-                piece.color !== color);
+                .some((point) => point.col === king.point.col &&
+                point.row === king.point.row) && piece.color !== color);
         }
         return false;
     }
@@ -2737,10 +2769,12 @@ class Board {
     getEnPassantFENString() {
         if (this.enPassantPoint) {
             if (this.reverted) {
-                return String.fromCharCode(104 - this.enPassantPoint.col) + (this.enPassantPoint.row + 1);
+                return (String.fromCharCode(104 - this.enPassantPoint.col) +
+                    (this.enPassantPoint.row + 1));
             }
             else {
-                return String.fromCharCode(97 + this.enPassantPoint.col) + (Math.abs(this.enPassantPoint.row - 7) + 1);
+                return (String.fromCharCode(97 + this.enPassantPoint.col) +
+                    (Math.abs(this.enPassantPoint.row - 7) + 1));
             }
         }
         else {
@@ -2767,19 +2801,40 @@ class Board {
                         }
                         else {
                             if (foundPiece instanceof Bishop) {
-                                fen += foundPiece.color === Color.BLACK ? 'b' : 'B';
+                                fen +=
+                                    foundPiece.color === Color.BLACK
+                                        ? 'b'
+                                        : 'B';
                             }
                             else {
                                 if (foundPiece instanceof Queen) {
-                                    fen += foundPiece.color === Color.BLACK ? 'q' : 'Q';
+                                    fen +=
+                                        foundPiece.color === Color.BLACK
+                                            ? 'q'
+                                            : 'Q';
                                 }
                                 else {
                                     if (foundPiece instanceof King) {
-                                        fen += foundPiece.color === Color.BLACK ? 'k' : 'K';
+                                        fen +=
+                                            foundPiece.color === Color.BLACK
+                                                ? 'k'
+                                                : 'K';
                                     }
                                     else {
                                         if (foundPiece instanceof Pawn) {
-                                            fen += foundPiece.color === Color.BLACK ? 'p' : 'P';
+                                            fen +=
+                                                foundPiece.color === Color.BLACK
+                                                    ? 'p'
+                                                    : 'P';
+                                        }
+                                        else {
+                                            if (foundPiece instanceof Coin) {
+                                                fen +=
+                                                    foundPiece.color ===
+                                                        Color.BLACK
+                                                        ? 'c'
+                                                        : 'C';
+                                            }
                                         }
                                     }
                                 }
