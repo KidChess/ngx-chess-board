@@ -36,6 +36,7 @@ import { ColorInput, PieceTypeInput } from './utils/inputs/piece-type-input';
     selector: 'ngx-chess-board',
     templateUrl: './ngx-chess-board.component.html',
     styleUrls: ['./ngx-chess-board.component.scss'],
+    standalone: true,
 })
 export class NgxChessBoardComponent
     implements OnInit, OnChanges, NgxChessBoardView, AfterViewInit {

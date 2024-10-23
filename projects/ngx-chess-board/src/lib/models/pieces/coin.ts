@@ -11,7 +11,7 @@ export class Coin extends Piece {
         constant: PieceConstant,
         board: Board,
     ) {
-        super(point, color, constant, 9, board);
+        super(point, color, constant, 1, board);
     }
 
     getPossibleMoves(): Point[] {

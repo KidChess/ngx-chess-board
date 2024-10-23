@@ -7,6 +7,7 @@ import { Pawn } from '../models/pieces/pawn';
 import { Piece } from '../models/pieces/piece';
 import { Point } from '../models/pieces/point';
 import { Rook } from '../models/pieces/rook';
+import { Coin } from '../models/pieces/coin';
 import { Constants } from '../utils/constants';
 import { PieceIconInputManager } from '../utils/inputs/piece-icon-input-manager';
 import { ColorInput, PieceTypeInput } from '../utils/inputs/piece-type-input';
@@ -20,7 +21,6 @@ import { DefaultPgnProcessor } from './pgn/default-pgn-processor';
 import { AbstractPgnProcessor } from './pgn/abstract-pgn-processor';
 
 export abstract class AbstractEngineFacade {
-
     public dragStartStrategy: DragStartStrategy = new DragStartStrategy();
     public dragEndStrategy: DragEndStrategy = new DragEndStrategy();
     public pgnProcessor: AbstractPgnProcessor = new DefaultPgnProcessor();
@@ -38,7 +38,8 @@ export abstract class AbstractEngineFacade {
     public modal: PiecePromotionModalComponent;
     public boardLoader: BoardLoader;
     public drawProvider: DrawProvider = new DrawProvider();
-    public pieceIconManager: PieceIconInputManager = new PieceIconInputManager();
+    public pieceIconManager: PieceIconInputManager =
+        new PieceIconInputManager();
     public moveHistoryProvider: HistoryMoveProvider = new HistoryMoveProvider();
     public moveDone: boolean;
     public disabling = false;
@@ -56,21 +57,21 @@ export abstract class AbstractEngineFacade {
     public abstract addPiece(
         pieceTypeInput: PieceTypeInput,
         colorInput: ColorInput,
-        coords: string
+        coords: string,
     ): void;
 
     public abstract onMouseUp(
         event: MouseEvent,
         pointClicked: Point,
         left: number,
-        top: number
+        top: number,
     ): void;
 
     public abstract onMouseDown(
         event: MouseEvent,
         pointClicked: Point,
         left?: number,
-        top?: number
+        top?: number,
     ): void;
 
     public checkIfPawnFirstMove(piece: Piece) {
@@ -94,5 +95,4 @@ export abstract class AbstractEngineFacade {
     public getMoveHistory(): HistoryMove[] {
         return this.moveHistoryProvider.getAll();
     }
-
 }

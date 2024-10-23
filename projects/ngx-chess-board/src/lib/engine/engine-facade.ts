@@ -18,6 +18,7 @@ import { King } from '../models/pieces/king';
 import { Pawn } from '../models/pieces/pawn';
 import { Piece } from '../models/pieces/piece';
 import { Point } from '../models/pieces/point';
+import { Coin } from '../models/pieces/coin';
 import { DefaultPgnProcessor } from './pgn/default-pgn-processor';
 import { AvailableMoveDecorator } from './piece-decorator/available-move-decorator';
 import { PiecePromotionResolver } from '../piece-promotion/piece-promotion-resolver';
@@ -26,7 +27,6 @@ import { MoveChange } from './outputs/move-change/move-change';
 import { PieceFactory } from './utils/piece-factory';
 
 export class EngineFacade extends AbstractEngineFacade {
-
     _selected = false;
     drawPoint: DrawPoint;
     drawProvider: DrawProvider;
@@ -36,10 +36,7 @@ export class EngineFacade extends AbstractEngineFacade {
 
     private historyMoveCandidate: HistoryMove;
 
-    constructor(
-        board: Board,
-        moveChange: EventEmitter<MoveChange>
-    ) {
+    constructor(board: Board, moveChange: EventEmitter<MoveChange>) {
         super(board);
         this.moveChange = moveChange;
         this.boardLoader = new BoardLoader(this);
@@ -86,17 +83,17 @@ export class EngineFacade extends AbstractEngineFacade {
         if (coords) {
             const sourceIndexes = MoveUtils.translateCoordsToIndex(
                 coords.substring(0, 2),
-                this.board.reverted
+                this.board.reverted,
             );
 
             const destIndexes = MoveUtils.translateCoordsToIndex(
                 coords.substring(2, 4),
-                this.board.reverted
+                this.board.reverted,
             );
 
             const srcPiece = this.board.getPieceByPoint(
                 sourceIndexes.yAxis,
-                sourceIndexes.xAxis
+                sourceIndexes.xAxis,
             );
 
             if (srcPiece) {
@@ -113,26 +110,26 @@ export class EngineFacade extends AbstractEngineFacade {
 
                 if (
                     this.board.isPointInPossibleMoves(
-                        new Point(destIndexes.yAxis, destIndexes.xAxis)
+                        new Point(destIndexes.yAxis, destIndexes.xAxis),
                     ) ||
                     this.board.isPointInPossibleCaptures(
-                        new Point(destIndexes.yAxis, destIndexes.xAxis)
+                        new Point(destIndexes.yAxis, destIndexes.xAxis),
                     )
                 ) {
                     this.saveClone();
                     this.movePiece(
                         srcPiece,
                         new Point(destIndexes.yAxis, destIndexes.xAxis),
-                        coords.length === 5 ? +coords.substring(4, 5) : 0
+                        coords.length === 5 ? +coords.substring(4, 5) : 0,
                     );
 
                     this.board.lastMoveSrc = new Point(
                         sourceIndexes.yAxis,
-                        sourceIndexes.xAxis
+                        sourceIndexes.xAxis,
                     );
                     this.board.lastMoveDest = new Point(
                         destIndexes.yAxis,
-                        destIndexes.xAxis
+                        destIndexes.xAxis,
                     );
 
                     this.disableSelection();
@@ -141,7 +138,6 @@ export class EngineFacade extends AbstractEngineFacade {
                 }
             }
         }
-
     }
 
     prepareActivePiece(pieceClicked: Piece, pointClicked: Point) {
@@ -151,20 +147,22 @@ export class EngineFacade extends AbstractEngineFacade {
             pieceClicked,
             pointClicked,
             this.board.currentWhitePlayer ? Color.WHITE : Color.BLACK,
-            this.board
+            this.board,
         ).getPossibleCaptures();
         this.board.possibleMoves = new AvailableMoveDecorator(
             pieceClicked,
             pointClicked,
             this.board.currentWhitePlayer ? Color.WHITE : Color.BLACK,
-            this.board
+            this.board,
         ).getPossibleMoves();
     }
 
     onPieceClicked(pieceClicked, pointClicked) {
         if (
-            (this.board.currentWhitePlayer && pieceClicked.color === Color.BLACK) ||
-            (!this.board.currentWhitePlayer && pieceClicked.color === Color.WHITE)
+            (this.board.currentWhitePlayer &&
+                pieceClicked.color === Color.BLACK) ||
+            (!this.board.currentWhitePlayer &&
+                pieceClicked.color === Color.WHITE)
         ) {
             return;
         }
@@ -174,14 +172,16 @@ export class EngineFacade extends AbstractEngineFacade {
 
     public handleClickEvent(pointClicked: Point, isMouseDown: boolean) {
         let moving = false;
-        if (((
-            this.board.isPointInPossibleMoves(pointClicked) ||
-            this.board.isPointInPossibleCaptures(pointClicked)
-        ) || this.freeMode) && pointClicked.isInRange()) {
+        if (
+            (this.board.isPointInPossibleMoves(pointClicked) ||
+                this.board.isPointInPossibleCaptures(pointClicked) ||
+                this.freeMode) &&
+            pointClicked.isInRange()
+        ) {
             this.saveClone();
             this.board.lastMoveSrc = new Point(
                 this.board.activePiece.point.row,
-                this.board.activePiece.point.col
+                this.board.activePiece.point.col,
             );
             this.board.lastMoveDest = pointClicked.clone();
             this.movePiece(this.board.activePiece, pointClicked);
@@ -197,7 +197,7 @@ export class EngineFacade extends AbstractEngineFacade {
         this.disableSelection();
         const pieceClicked = this.board.getPieceByPoint(
             pointClicked.row,
-            pointClicked.col
+            pointClicked.col,
         );
         if (pieceClicked && !moving) {
             this.onFreeMode(pieceClicked);
@@ -209,7 +209,7 @@ export class EngineFacade extends AbstractEngineFacade {
         event: MouseEvent,
         pointClicked: Point,
         left?: number,
-        top?: number
+        top?: number,
     ) {
         this.moveDone = false;
         if (event.button !== 0) {
@@ -222,7 +222,7 @@ export class EngineFacade extends AbstractEngineFacade {
                 event.altKey,
                 event.shiftKey,
                 left,
-                top
+                top,
             );
             return;
         }
@@ -239,16 +239,19 @@ export class EngineFacade extends AbstractEngineFacade {
 
         const pieceClicked = this.board.getPieceByPoint(
             pointClicked.row,
-            pointClicked.col
+            pointClicked.col,
         );
 
         if (this.freeMode) {
             if (pieceClicked) {
                 if (event.ctrlKey) {
-                    this.board.pieces = this.board.pieces.filter(e => e !== pieceClicked);
+                    this.board.pieces = this.board.pieces.filter(
+                        (e) => e !== pieceClicked,
+                    );
                     return;
                 }
-                this.board.currentWhitePlayer = (pieceClicked.color === Color.WHITE);
+                this.board.currentWhitePlayer =
+                    pieceClicked.color === Color.WHITE;
             }
         }
 
@@ -270,7 +273,7 @@ export class EngineFacade extends AbstractEngineFacade {
         event: MouseEvent,
         pointClicked: Point,
         left: number,
-        top: number
+        top: number,
     ) {
         this.moveDone = false;
         if (event.button !== 0 && !this.drawDisabled) {
@@ -280,7 +283,8 @@ export class EngineFacade extends AbstractEngineFacade {
                 event.ctrlKey,
                 event.altKey,
                 event.shiftKey,
-                left, top
+                left,
+                top,
             );
             return;
         }
@@ -302,7 +306,7 @@ export class EngineFacade extends AbstractEngineFacade {
         }
         const pieceClicked = this.board.getPieceByPoint(
             pointClicked.row,
-            pointClicked.col
+            pointClicked.col,
         );
 
         if (this.isPieceDisabled(pieceClicked)) {
@@ -328,19 +332,14 @@ export class EngineFacade extends AbstractEngineFacade {
         const destPiece = this.board.pieces.find(
             (piece) =>
                 piece.point.col === newPoint.col &&
-                piece.point.row === newPoint.row
+                piece.point.row === newPoint.row,
         );
 
-        this.pgnProcessor.process(
-            this.board,
-            toMovePiece,
-            newPoint,
-            destPiece
-        );
+        this.pgnProcessor.process(this.board, toMovePiece, newPoint, destPiece);
 
         if (destPiece && toMovePiece.color !== destPiece.color) {
             this.board.pieces = this.board.pieces.filter(
-                (piece) => piece !== destPiece
+                (piece) => piece !== destPiece,
             );
         } else {
             if (destPiece && toMovePiece.color === destPiece.color) {
@@ -352,7 +351,7 @@ export class EngineFacade extends AbstractEngineFacade {
             MoveUtils.format(toMovePiece.point, newPoint, this.board.reverted),
             toMovePiece.constant.name,
             toMovePiece.color === Color.WHITE ? 'white' : 'black',
-            !!destPiece
+            !!destPiece,
         );
         this.moveHistoryProvider.addMove(this.historyMoveCandidate);
 
@@ -362,7 +361,7 @@ export class EngineFacade extends AbstractEngineFacade {
                 if (newPoint.col < 3) {
                     const leftRook = this.board.getPieceByField(
                         toMovePiece.point.row,
-                        0
+                        0,
                     );
                     if (!this.freeMode) {
                         leftRook.point.col = this.board.reverted ? 2 : 3;
@@ -370,7 +369,7 @@ export class EngineFacade extends AbstractEngineFacade {
                 } else {
                     const rightRook = this.board.getPieceByField(
                         toMovePiece.point.row,
-                        7
+                        7,
                     );
                     if (!this.freeMode) {
                         rightRook.point.col = this.board.reverted ? 4 : 5;
@@ -403,7 +402,7 @@ export class EngineFacade extends AbstractEngineFacade {
 
         if (toPromotePiece.point.row === 0 || toPromotePiece.point.row === 7) {
             this.board.pieces = this.board.pieces.filter(
-                (piece) => piece !== toPromotePiece
+                (piece) => piece !== toPromotePiece,
             );
 
             // When we make move manually, we pass promotion index already, so we don't need
@@ -414,7 +413,7 @@ export class EngineFacade extends AbstractEngineFacade {
                 PiecePromotionResolver.resolvePromotionChoice(
                     this.board,
                     toPromotePiece,
-                    promotionIndex
+                    promotionIndex,
                 );
                 this.afterMoveActions(promotionIndex);
             }
@@ -430,11 +429,11 @@ export class EngineFacade extends AbstractEngineFacade {
 
         this.board.blackKingChecked = this.board.isKingInCheck(
             Color.BLACK,
-            this.board.pieces
+            this.board.pieces,
         );
         this.board.whiteKingChecked = this.board.isKingInCheck(
             Color.WHITE,
-            this.board.pieces
+            this.board.pieces,
         );
         const check =
             this.board.blackKingChecked || this.board.whiteKingChecked;
@@ -463,9 +462,9 @@ export class EngineFacade extends AbstractEngineFacade {
             stalemate,
             fen: this.board.fen,
             pgn: {
-                pgn: this.pgnProcessor.getPGN()
+                pgn: this.pgnProcessor.getPGN(),
             },
-            freeMode: this.freeMode
+            freeMode: this.freeMode,
         });
 
         this.moveDone = true;
@@ -487,7 +486,7 @@ export class EngineFacade extends AbstractEngineFacade {
                 PiecePromotionResolver.resolvePromotionChoice(
                     this.board,
                     piece,
-                    index
+                    index,
                 );
                 this.afterMoveActions(index);
             });
@@ -509,8 +508,8 @@ export class EngineFacade extends AbstractEngineFacade {
                                     piece.point.col,
                                     move.row,
                                     move.col,
-                                    this.board
-                                )
+                                    this.board,
+                                ),
                         ) ||
                     piece
                         .getPossibleCaptures()
@@ -522,9 +521,9 @@ export class EngineFacade extends AbstractEngineFacade {
                                     piece.point.col,
                                     capture.row,
                                     capture.col,
-                                    this.board
-                                )
-                        )
+                                    this.board,
+                                ),
+                        ),
             );
     }
 
@@ -555,7 +554,7 @@ export class EngineFacade extends AbstractEngineFacade {
             const foundCapture = this.board.possibleCaptures.find(
                 (capture) =>
                     capture.col === pieceClicked.point.col &&
-                    capture.row === pieceClicked.point.row
+                    capture.row === pieceClicked.point.row,
             );
 
             if (foundCapture) {
@@ -576,7 +575,7 @@ export class EngineFacade extends AbstractEngineFacade {
         alt: boolean,
         shift: boolean,
         left: number,
-        top: number
+        top: number,
     ) {
         const upPoint = ClickUtils.getDrawingPoint(
             this.heightAndWidth,
@@ -587,7 +586,7 @@ export class EngineFacade extends AbstractEngineFacade {
             alt,
             shift,
             left,
-            top
+            top,
         );
 
         if (this.drawPoint.isEqual(upPoint)) {
@@ -620,25 +619,27 @@ export class EngineFacade extends AbstractEngineFacade {
     addPiece(
         pieceTypeInput: PieceTypeInput,
         colorInput: ColorInput,
-        coords: string
+        coords: string,
     ) {
         if (this.freeMode && coords && pieceTypeInput > 0 && colorInput > 0) {
             let indexes = MoveUtils.translateCoordsToIndex(
                 coords,
-                this.board.reverted
+                this.board.reverted,
             );
             let existing = this.board.getPieceByPoint(
                 indexes.yAxis,
-                indexes.xAxis
+                indexes.xAxis,
             );
             if (existing) {
-                this.board.pieces = this.board.pieces.filter(e => e !== existing);
+                this.board.pieces = this.board.pieces.filter(
+                    (e) => e !== existing,
+                );
             }
             let createdPiece = PieceFactory.create(
                 indexes,
                 pieceTypeInput,
                 colorInput,
-                this.board
+                this.board,
             );
             this.saveClone();
             this.board.pieces.push(createdPiece);
