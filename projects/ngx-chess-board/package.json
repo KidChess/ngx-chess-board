@@ -2,9 +2,9 @@
   "name": "ngx-chess-board",
   "version": "2.2.3",
   "peerDependencies": {
+    "@angular/cdk": "^13.2.0",
     "@angular/common": "^13.2.0",
-    "@angular/core": "^13.2.0",
-    "@angular/cdk": "^13.2.0"
+    "@angular/core": "^13.2.0"
   },
   "description": "Chess game component",
   "repository": {
@@ -23,5 +23,8 @@
     "board",
     "fen"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "4.5"
+  }
 }
