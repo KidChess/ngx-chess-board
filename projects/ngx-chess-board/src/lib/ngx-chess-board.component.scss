@@ -1,3 +1,28 @@
+/*========================================*/
+/*----------------global color definitions*/
+/*========================================*/
+$white-primary: rgba(255, 255, 255, 1);
+$black-primary: rgba(0, 0, 0, 1);
+$blue-primary: #6495ed;
+$bar: #5aafcd;
+$red-primary: #ff0000;
+$yellow-primary: #ffd700;
+$green-primary: #99c13c;
+// $green-primary: darken(#40ff40, 15%);
+$purple-primary: #7864ed;
+$white-primary-translucent: transparentize(
+    $color: $white-primary,
+    $amount: 0.2,
+);
+$black-primary-translucent: transparentize(
+    $color: $black-primary,
+    $amount: 0.4,
+);
+$blue-primary-translucent: transparentize(
+    $color: $blue-primary,
+    $amount: 0.2,
+);
+
 #board {
     font-family: 'Courier New', serif;
     position: relative;
@@ -45,7 +70,7 @@
 }
 
 .possible-point {
-    background: radial-gradient(#13262F 15%, transparent 20%);
+    background: radial-gradient(#13262f 15%, transparent 20%);
 }
 
 .possible-point:hover,
@@ -54,9 +79,10 @@
 }
 
 .possible-capture {
-    background: radial-gradient(transparent 0%, transparent 80%,#13262F 80%);
+    background: radial-gradient(transparent 0%, transparent 80%, #13262f 80%);
     opacity: 0.5;
-    box-sizing: border-box;  margin: 0;
+    box-sizing: border-box;
+    margin: 0;
     padding: 0;
 }
 
@@ -71,7 +97,7 @@
 }
 
 .current-selection {
-    background-color: #72620B !important;
+    background-color: #72620b !important;
 }
 
 .yCoord {
@@ -101,17 +127,99 @@
 
 .arrow {
     stroke-width: 2;
+    opacity: 0;
+    animation: fadeInArrow 0.2s ease-in-out forwards;
+    stroke-width: 4.5 !important;
+    border-radius: 10px !important;
+    stroke-linecap: round !important;
+}
+
+@keyframes fadeInArrow {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
 }
 
 svg {
     filter: drop-shadow(1px 1px 0px #111) drop-shadow(-1px 1px 0px #111) drop-shadow(1px -1px 0px #111)
         drop-shadow(-1px -1px 0px #111);
+    animation: fadeInShadow 0.2s ease-in-out forwards;
 }
 
-:host { display:inline-block!important; }
+@keyframes fadeInShadow {
+    0% {
+        filter: drop-shadow(1px 1px 0px #111) drop-shadow(-1px 1px 0px #111) drop-shadow(1px -1px 0px #111)
+            drop-shadow(-1px -1px 0px #111);
+    }
+    100% {
+        filter: drop-shadow(1px 1px 0px #111) drop-shadow(-1px 1px 0px #111) drop-shadow(1px -1px 0px #111)
+            drop-shadow(-1px -1px 0px #111);
+    }
+}
+
+//styles for ngx-chess-board arrows and circles
+#board svg {
+    z-index: 1000 !important;
+    filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.2)) drop-shadow(-1px 1px 2px rgba(0, 0, 0, 0.2))
+        drop-shadow(1px -1px 2px rgba(0, 0, 0, 0.2)) drop-shadow(-1px -1px 2px rgba(0, 0, 0, 0.2)) !important;
+}
+
+#greenArrow path,
+#redArrow path,
+#blueArrow path,
+#orangeArrow path {
+    d: path('M 4 2.5 L 4 9.5 L 10 6 L 4 2.5 z');
+}
+
+circle {
+    stroke-width: 4.5 !important;
+}
+
+circle[stroke='blue'] {
+    stroke: $blue-primary !important;
+}
+
+circle[stroke='green'] {
+    stroke: $green-primary !important;
+}
+
+circle[stroke='orange'] {
+    stroke: $yellow-primary !important;
+}
+
+line[stroke='blue'] {
+    stroke: $blue-primary !important;
+}
+
+line[stroke='green'] {
+    stroke: $green-primary !important;
+}
+
+line[stroke='orange'] {
+    stroke: $yellow-primary !important;
+}
+
+#blueArrow path {
+    fill: $blue-primary !important;
+}
+
+#greenArrow path {
+    fill: $green-primary !important;
+}
+
+#orangeArrow path {
+    fill: $yellow-primary !important;
+}
+
+:host {
+    display: inline-block !important;
+}
 
 .single-piece {
-position: absolute;
+    position: absolute;
     z-index: 999;
     justify-content: center;
     text-align: center;
@@ -131,5 +239,5 @@ position: absolute;
     box-sizing: border-box;
 }
 .cdk-drag:not(.cdk-drag-dragging) {
-    transition: transform 200ms cubic-bezier(0,.3,.14,.49);
+    transition: transform 200ms cubic-bezier(0, 0.3, 0.14, 0.49);
 }
