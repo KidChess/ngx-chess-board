@@ -1,4 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import {
     MoveChange,
     NgxChessBoardComponent,
@@ -7,13 +8,19 @@ import {
 import {
     ColorInput,
     PieceTypeInput,
-} from 'ngx-chess-board/src/lib/utils/inputs/piece-type-input';
+} from 'projects/ngx-chess-board/src/lib/utils/inputs/piece-type-input';
+// import {
+//     ColorInput,
+//     PieceTypeInput,
+// } from 'ngx-chess-board/src/lib/utils/inputs/piece-type-input';
 import { FenComponent } from './components/fen/fen.component';
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
+    standalone: true, // Add it to standalone
+    imports: [NgxChessBoardComponent, FormsModule], // Include standalone imports
 })
 export class AppComponent {
     @ViewChild('board')

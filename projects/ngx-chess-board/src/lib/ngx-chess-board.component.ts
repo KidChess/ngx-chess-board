@@ -1,4 +1,10 @@
-import { CdkDragEnd, CdkDragMove, CdkDragStart } from '@angular/cdk/drag-drop';
+import {
+    CdkDragEnd,
+    CdkDragMove,
+    CdkDragStart,
+    DragDropModule,
+} from '@angular/cdk/drag-drop';
+import { CommonModule } from '@angular/common';
 import {
     AfterViewInit,
     Component,
@@ -15,7 +21,8 @@ import {
 import { AbstractEngineFacade } from './engine/abstract-engine-facade';
 import { BoardLoader } from './engine/board-state-provider/board-loader/board-loader';
 import {
-    NotationProcessorFactory, NotationType,
+    NotationProcessorFactory,
+    NotationType,
 } from './engine/board-state-provider/board-loader/notation-processors/notation-processor-factory';
 import { ClickUtils } from './engine/click/click-utils';
 import { EngineFacade } from './engine/engine-facade';
@@ -31,22 +38,24 @@ import { PieceIconInput } from './utils/inputs/piece-icon-input';
 import { PieceIconInputManager } from './utils/inputs/piece-icon-input-manager';
 import { ColorInput, PieceTypeInput } from './utils/inputs/piece-type-input';
 
-
 @Component({
     selector: 'ngx-chess-board',
     templateUrl: './ngx-chess-board.component.html',
     styleUrls: ['./ngx-chess-board.component.scss'],
     standalone: true,
+    imports: [CommonModule, DragDropModule, PiecePromotionModalComponent], // Ensure CommonModule and DragDropModule are imported
 })
 export class NgxChessBoardComponent
-    implements OnInit, OnChanges, NgxChessBoardView, AfterViewInit {
-
+    implements OnInit, OnChanges, NgxChessBoardView, AfterViewInit
+{
     @Input() darkTileColor = Constants.DEFAULT_DARK_TILE_COLOR;
     @Input() lightTileColor: string = Constants.DEFAULT_LIGHT_TILE_COLOR;
     @Input() showCoords = true;
     @Input() sourcePointColor: string = Constants.DEFAULT_SOURCE_POINT_COLOR;
-    @Input() destinationPointColor: string = Constants.DEFAULT_DESTINATION_POINT_COLOR;
-    @Input() legalMovesPointColor: string = Constants.DEFAULT_LEGAL_MOVE_POINT_COLOR;
+    @Input() destinationPointColor: string =
+        Constants.DEFAULT_DESTINATION_POINT_COLOR;
+    @Input() legalMovesPointColor: string =
+        Constants.DEFAULT_LEGAL_MOVE_POINT_COLOR;
     @Input() showLastMove = true;
     @Input() showLegalMoves = true;
     @Input() showActivePiece = true;
@@ -73,10 +82,7 @@ export class NgxChessBoardComponent
     engineFacade: AbstractEngineFacade;
 
     constructor(private ngxChessBoardService: NgxChessBoardService) {
-        this.engineFacade = new EngineFacade(
-            new Board(),
-            this.moveChange
-        );
+        this.engineFacade = new EngineFacade(new Board(), this.moveChange);
     }
 
     @Input('size')
@@ -147,7 +153,6 @@ export class NgxChessBoardComponent
         this.ngxChessBoardService.componentMethodCalled$.subscribe(() => {
             this.engineFacade.reset();
         });
-
     }
 
     ngAfterViewInit(): void {
@@ -160,7 +165,7 @@ export class NgxChessBoardComponent
             event,
             this.getClickPoint(event),
             this.boardRef.nativeElement.getBoundingClientRect().left,
-            this.boardRef.nativeElement.getBoundingClientRect().top
+            this.boardRef.nativeElement.getBoundingClientRect().top,
         );
     }
 
@@ -180,7 +185,7 @@ export class NgxChessBoardComponent
     setFEN(fen: string): void {
         try {
             this.engineFacade.boardLoader.setNotationProcessor(
-                NotationProcessorFactory.getProcessor(NotationType.FEN)
+                NotationProcessorFactory.getProcessor(NotationType.FEN),
             );
             this.engineFacade.boardLoader.loadFEN(fen);
             this.engineFacade.board.possibleCaptures = [];
@@ -195,7 +200,7 @@ export class NgxChessBoardComponent
         try {
             this.engineFacade.pgnProcessor.reset();
             this.engineFacade.boardLoader.setNotationProcessor(
-                NotationProcessorFactory.getProcessor(NotationType.PGN)
+                NotationProcessorFactory.getProcessor(NotationType.PGN),
             );
             this.engineFacade.boardLoader.loadPGN(pgn);
             this.engineFacade.board.possibleCaptures = [];
@@ -216,7 +221,7 @@ export class NgxChessBoardComponent
         this.engineFacade.dragEndStrategy.process(
             event,
             this.engineFacade.moveDone,
-            this.startTransition
+            this.startTransition,
         );
     }
 
@@ -229,9 +234,11 @@ export class NgxChessBoardComponent
     }
 
     onMouseDown(event: MouseEvent) {
-        this.engineFacade.onMouseDown(event, this.getClickPoint(event),
+        this.engineFacade.onMouseDown(
+            event,
+            this.getClickPoint(event),
             this.boardRef.nativeElement.getBoundingClientRect().left,
-            this.boardRef.nativeElement.getBoundingClientRect().top
+            this.boardRef.nativeElement.getBoundingClientRect().top,
         );
     }
 
@@ -241,7 +248,7 @@ export class NgxChessBoardComponent
             this.boardRef.nativeElement.getBoundingClientRect().top,
             this.boardRef.nativeElement.getBoundingClientRect().height,
             this.boardRef.nativeElement.getBoundingClientRect().left,
-            this.boardRef.nativeElement.getBoundingClientRect().width
+            this.boardRef.nativeElement.getBoundingClientRect().width,
         );
     }
 
@@ -249,12 +256,11 @@ export class NgxChessBoardComponent
         this.pieceSize = this.engineFacade.heightAndWidth / 8;
     }
 
-
     getCustomPieceIcons(piece: Piece) {
         return JSON.parse(
             `{ "background-image": "url('${this.engineFacade.pieceIconManager.getPieceIcon(
-                piece
-            )}')"}`
+                piece,
+            )}')"}`,
         );
     }
 
@@ -277,7 +283,7 @@ export class NgxChessBoardComponent
     addPiece(
         pieceTypeInput: PieceTypeInput,
         colorInput: ColorInput,
-        coords: string
+        coords: string,
     ) {
         this.engineFacade.addPiece(pieceTypeInput, colorInput, coords);
     }
@@ -287,14 +293,23 @@ export class NgxChessBoardComponent
     }
 
     dragMoved($event: CdkDragMove<any>) {
-        let x = ($event.pointerPosition.x - $event.source.getRootElement().parentElement.getBoundingClientRect().left) - (this.pieceSize / 2);
-        let y = ($event.pointerPosition.y - $event.source.getRootElement().parentElement.getBoundingClientRect().top) - (this.pieceSize / 2);
-        $event.source.getRootElement().style.transform = 'translate3d(' + x + 'px, '
-            + (y) + 'px,0px)';
+        let x =
+            $event.pointerPosition.x -
+            $event.source.getRootElement().parentElement.getBoundingClientRect()
+                .left -
+            this.pieceSize / 2;
+        let y =
+            $event.pointerPosition.y -
+            $event.source.getRootElement().parentElement.getBoundingClientRect()
+                .top -
+            this.pieceSize / 2;
+        $event.source.getRootElement().style.transform =
+            'translate3d(' + x + 'px, ' + y + 'px,0px)';
     }
 
     getTileBackgroundColor(i, j): string {
-        let color = ((i + j) % 2 === 0) ? this.lightTileColor : this.darkTileColor;
+        let color =
+            (i + j) % 2 === 0 ? this.lightTileColor : this.darkTileColor;
 
         if (this.showLastMove) {
             if (this.engineFacade.board.isXYInSourceMove(i, j)) {

@@ -29,7 +29,7 @@ import { PieceFactory } from './utils/piece-factory';
 export class EngineFacade extends AbstractEngineFacade {
     _selected = false;
     drawPoint: DrawPoint;
-    drawProvider: DrawProvider;
+    drawProvider: DrawProvider = new DrawProvider();
     boardStateProvider: BoardStateProvider;
     moveStateProvider: MoveStateProvider;
     moveChange: EventEmitter<MoveChange>;

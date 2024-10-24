@@ -1,3 +1,5 @@
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { CommonModule } from '@angular/common';
 import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { PieceIconInput } from '../../utils/inputs/piece-icon-input';
 
@@ -5,6 +7,8 @@ import { PieceIconInput } from '../../utils/inputs/piece-icon-input';
     selector: 'app-piece-promotion-modal',
     templateUrl: './piece-promotion-modal.component.html',
     styleUrls: ['./piece-promotion-modal.component.scss'],
+    standalone: true,
+    imports: [CommonModule, DragDropModule], // Add it to imports
 })
 export class PiecePromotionModalComponent {
     @ViewChild('myModal', { static: false }) modal: ElementRef;
