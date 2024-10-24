@@ -126,7 +126,6 @@ $blue-primary-translucent: transparentize(
 }
 
 .arrow {
-    stroke-width: 2;
     opacity: 0;
     animation: fadeInArrow 0.2s ease-in-out forwards;
     stroke-width: 4.5 !important;
@@ -176,6 +175,8 @@ svg {
 
 circle {
     stroke-width: 4.5 !important;
+    opacity: 0;
+    animation: fadeInArrow 0.2s ease-in-out forwards;
 }
 
 circle[stroke='blue'] {
