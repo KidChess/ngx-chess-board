@@ -122,7 +122,7 @@ export class King extends Piece {
 
         if (!this.isMovedAlready) {
             let longCastlePossible = true;
-            for (let i = col - 1; i > 1; --i) {
+            for (let i = col - 1; i > 0; --i) {
                 if (
                     !this.board.isFieldEmpty(row, i) ||
                     this.board.isFieldUnderAttack(
