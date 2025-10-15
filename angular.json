@@ -146,5 +146,8 @@
       }
     }
   },
-  "defaultProject": "chess-board"
+  "defaultProject": "chess-board",
+  "cli": {
+    "analytics": false
+  }
 }

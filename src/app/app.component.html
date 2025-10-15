@@ -124,6 +124,12 @@
         </button>
 
         <button type="button" class="btn btn-info" style="margin-right: auto" (click)="getFEN()">Show FEN</button>
+        
+        <button type="button" class="btn btn-warning" style="margin-right: 10px" (click)="testEnPassant()">Test En Passant</button>
+        
+        <button type="button" class="btn btn-danger" style="margin-right: 10px" (click)="testEnPassantKingSafety()">Test King Safety</button>
+        
+        <button type="button" class="btn btn-primary" style="margin-right: 10px" (click)="testEnPassantMove()">Execute En Passant</button>
     </div>
 
     <div class="form-group input-group-sm">
