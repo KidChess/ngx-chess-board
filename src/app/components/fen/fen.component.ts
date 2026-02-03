@@ -12,8 +12,7 @@ import { FormsModule } from '@angular/forms';
     templateUrl: './fen.component.html',
     styleUrls: ['./fen.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: true,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule]
 })
 export class FenComponent {
     @Input() fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';

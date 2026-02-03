@@ -18,9 +18,8 @@ import { FenComponent } from './components/fen/fen.component';
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
-    styleUrls: ['./app.component.scss'],
-    standalone: true, // Add it to standalone
-    imports: [NgxChessBoardComponent, FormsModule], // Include standalone imports
+    styleUrls: ['./app.component.scss'], // Add it to standalone
+    imports: [NgxChessBoardComponent, FormsModule]
 })
 export class AppComponent {
     @ViewChild('board')

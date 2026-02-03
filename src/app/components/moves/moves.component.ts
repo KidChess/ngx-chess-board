@@ -7,6 +7,7 @@ import { BehaviorSubject } from 'rxjs';
     templateUrl: './moves.component.html',
     styleUrls: ['./moves.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class MovesComponent {
     @Output() public switchToMoveIndex = new EventEmitter<number>();
