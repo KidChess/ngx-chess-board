@@ -187,7 +187,7 @@ export class DefaultFenProcessor implements NotationProcessor {
 
             this.setCurrentPlayer(engineFacade.board, fen);
             this.setCastles(engineFacade.board, fen);
-            this.setEnPassant(fen);
+            this.setEnPassant(engineFacade.board, fen);
             this.setFullMoveCount(fen);
             engineFacade.board.fen = fen;
         } else {
@@ -227,16 +227,45 @@ export class DefaultFenProcessor implements NotationProcessor {
 
     private setFullMoveCount(fen: string) {}
 
-    private setEnPassant(fen: string) {
+    private setEnPassant(board: Board, fen: string) {
         if (fen) {
             const split = fen.split(' ');
-            const enPassantPoint = split[3];
+            const enPassantSquare = split[3];
 
-            if (enPassantPoint === '-') {
+            if (enPassantSquare === '-') {
+                board.enPassantPoint = null;
+                board.enPassantPiece = null;
                 return;
             }
 
-            // if()
+            // Parse the en passant square (e.g., "e3" or "d6")
+            const col = enPassantSquare.charCodeAt(0) - 97; // 'a' = 0, 'b' = 1, etc.
+            const row = 8 - parseInt(enPassantSquare.charAt(1)); // Convert to 0-based board coordinates
+
+            // Validate the square is within board bounds
+            if (row < 0 || row > 7 || col < 0 || col > 7) {
+                board.enPassantPoint = null;
+                board.enPassantPiece = null;
+                return;
+            }
+
+            board.enPassantPoint = new Point(row, col);
+
+            // Find the pawn that can be captured via en passant
+            // The pawn should be on the adjacent row to the en passant square
+            const pawnRow = board.currentWhitePlayer ? row + 1 : row - 1;
+            const targetPawn = board.getPieceByPoint(pawnRow, col);
+
+            // Validate that there's actually a pawn of the opposite color that can be captured
+            if (targetPawn && 
+                targetPawn instanceof Pawn && 
+                targetPawn.color !== (board.currentWhitePlayer ? Color.WHITE : Color.BLACK)) {
+                board.enPassantPiece = targetPawn;
+            } else {
+                // Invalid en passant state, clear it
+                board.enPassantPoint = null;
+                board.enPassantPiece = null;
+            }
         }
     }
 

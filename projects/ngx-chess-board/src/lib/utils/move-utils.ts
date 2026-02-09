@@ -21,24 +21,51 @@ export class MoveUtils {
     ) {
         const srcPiece = board.getPieceByField(row, col);
         const destPiece = board.getPieceByField(destRow, destCol);
+        
+        // Check if this is an en passant capture
+        let enPassantCapturedPiece: Piece = null;
+        const isEnPassantMove = srcPiece instanceof Pawn && 
+                              board.enPassantPoint && 
+                              board.enPassantPoint.row === destRow && 
+                              board.enPassantPoint.col === destCol;
+        
+        if (isEnPassantMove) {
+            enPassantCapturedPiece = board.enPassantPiece;
+        }
 
+        // Simulate the move
         if (srcPiece) {
             srcPiece.point.row = destRow;
             srcPiece.point.col = destCol;
         }
 
+        // Remove captured piece (normal capture)
         if (destPiece) {
             board.pieces = board.pieces.filter((piece) => piece !== destPiece);
         }
+        
+        // Remove en passant captured pawn
+        if (enPassantCapturedPiece) {
+            board.pieces = board.pieces.filter((piece) => piece !== enPassantCapturedPiece);
+        }
+        
+        // Check if the move would leave/put the king in check
         const isBound = board.isKingInCheck(currentColor, board.pieces);
 
+        // Restore the original position
         if (srcPiece) {
             srcPiece.point.col = col;
             srcPiece.point.row = row;
         }
 
+        // Restore captured piece (normal capture)
         if (destPiece) {
             board.pieces.push(destPiece);
+        }
+        
+        // Restore en passant captured pawn
+        if (enPassantCapturedPiece) {
+            board.pieces.push(enPassantCapturedPiece);
         }
 
         return isBound;

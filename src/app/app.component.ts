@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, AfterViewInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
     MoveChange,
@@ -22,12 +22,12 @@ import { FenComponent } from './components/fen/fen.component';
     standalone: true, // Add it to standalone
     imports: [NgxChessBoardComponent, FormsModule], // Include standalone imports
 })
-export class AppComponent {
+export class AppComponent implements AfterViewInit {
     @ViewChild('board')
     boardManager: NgxChessBoardComponent;
 
     @ViewChild('fenManager') fenManager: FenComponent;
-    public fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+    public fen = 'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1';
     private currentStateIndex: number;
     manualMove = 'd2d4';
     icons: PieceIconInput = {
@@ -60,6 +60,13 @@ export class AppComponent {
     public selectedColor = '1';
     public pgn: string = '';
 
+    ngAfterViewInit(): void {
+        // Automatically load the en passant test position
+        setTimeout(() => {
+            this.setFen();
+        }, 100);
+    }
+
     public reset(): void {
         alert('Resetting board');
         this.boardManager.reset();
@@ -80,6 +87,29 @@ export class AppComponent {
     public setFen(): void {
         if (this.fen) {
             this.boardManager.setFEN(this.fen);
+            
+            // Debug: Check en passant state after setting FEN
+            const board = (this.boardManager as any).engineFacade.board;
+            console.log('En passant point:', board.enPassantPoint);
+            console.log('En passant piece:', board.enPassantPiece);
+            
+            let debugMessage = 'En Passant Debug:\n';
+            if (board.enPassantPoint) {
+                const square = `${String.fromCharCode(97 + board.enPassantPoint.col)}${8 - board.enPassantPoint.row}`;
+                debugMessage += `✓ En passant target square: ${square}\n`;
+                debugMessage += `✓ Point: row=${board.enPassantPoint.row}, col=${board.enPassantPoint.col}\n`;
+                
+                if (board.enPassantPiece) {
+                    const pieceSquare = `${String.fromCharCode(97 + board.enPassantPiece.point.col)}${8 - board.enPassantPiece.point.row}`;
+                    debugMessage += `✓ Capturable piece: ${board.enPassantPiece.color === 0 ? 'White' : 'Black'} pawn at ${pieceSquare}`;
+                } else {
+                    debugMessage += '✗ No capturable piece found';
+                }
+            } else {
+                debugMessage += '✗ No en passant target detected';
+            }
+            
+            alert(debugMessage);
         }
     }
 
@@ -96,6 +126,35 @@ export class AppComponent {
     getFEN() {
         let fen = this.boardManager.getFEN();
         alert(fen);
+    }
+
+    testEnPassant() {
+        // Test FEN with c3 en passant square - black to play
+        const testFen = 'rnbqkbnr/pp1ppppp/8/2p5/2P5/8/PP1PPPPP/RNBQKBNR b KQkq c3 0 2';
+        this.fen = testFen;
+        this.setFen();
+    }
+
+    testEnPassantKingSafety() {
+        // Test a position where en passant might be blocked due to king safety
+        // Black king on e8, White rook on e1, Black pawn on d4, White pawn just moved c2-c4
+        const testFen = 'r3k2r/pp1ppppp/8/2p5/2P1P3/8/PP1P1PPP/R3K2R b KQkq c3 0 2';
+        this.fen = testFen;
+        this.setFen();
+        
+        // This should allow en passant if our fix works correctly
+        console.log('Testing en passant with king safety considerations...');
+    }
+
+    testEnPassantMove() {
+        // Try to execute the en passant move d4xc3
+        try {
+            this.boardManager.move('d4c3');
+            console.log('✅ En passant move d4xc3 executed successfully!');
+            this.fen = this.boardManager.getFEN();
+        } catch (error) {
+            console.log('❌ En passant move d4xc3 failed:', error);
+        }
     }
 
     showMoveHistory() {
