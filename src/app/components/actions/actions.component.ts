@@ -5,6 +5,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Output } from '@angul
     templateUrl: './actions.component.html',
     styleUrls: ['./actions.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ActionsComponent {
     @Output() public undo = new EventEmitter<void>();

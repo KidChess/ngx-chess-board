@@ -5,6 +5,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Output } from '@angul
     templateUrl: './settings.component.html',
     styleUrls: ['./settings.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class SettingsComponent {
 

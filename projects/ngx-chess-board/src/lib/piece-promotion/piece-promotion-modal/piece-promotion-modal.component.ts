@@ -7,8 +7,7 @@ import { PieceIconInput } from '../../utils/inputs/piece-icon-input';
     selector: 'app-piece-promotion-modal',
     templateUrl: './piece-promotion-modal.component.html',
     styleUrls: ['./piece-promotion-modal.component.scss'],
-    standalone: true,
-    imports: [CommonModule, DragDropModule], // Add it to imports
+    imports: [CommonModule, DragDropModule]
 })
 export class PiecePromotionModalComponent {
     @ViewChild('myModal', { static: false }) modal: ElementRef;
