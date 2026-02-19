@@ -335,7 +335,14 @@ export class EngineFacade extends AbstractEngineFacade {
                 piece.point.row === newPoint.row,
         );
 
-        this.pgnProcessor.process(this.board, toMovePiece, newPoint, destPiece);
+        // Check if this is an en passant move and use the en passant piece as the captured piece for PGN notation
+        const isEnPassant = toMovePiece instanceof Pawn &&
+                            this.board.enPassantPoint &&
+                            this.board.enPassantPoint.row === newPoint.row &&
+                            this.board.enPassantPoint.col === newPoint.col;
+        const pgnDestPiece = isEnPassant ? this.board.enPassantPiece : destPiece;
+
+        this.pgnProcessor.process(this.board, toMovePiece, newPoint, pgnDestPiece);
 
         if (destPiece && toMovePiece.color !== destPiece.color) {
             this.board.pieces = this.board.pieces.filter(
@@ -444,8 +451,8 @@ export class EngineFacade extends AbstractEngineFacade {
             this.checkForPat(Color.BLACK) || this.checkForPat(Color.WHITE);
 
         this.historyMoveCandidate.setGameStates(check, stalemate, checkmate);
-        this.pgnProcessor.processChecks(checkmate, check, stalemate);
         this.pgnProcessor.addPromotionChoice(promotionIndex);
+        this.pgnProcessor.processChecks(checkmate, check, stalemate);
 
         this.disabling = false;
         this.board.calculateFEN();
